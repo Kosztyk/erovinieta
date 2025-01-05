@@ -1,0 +1,13 @@
+{
+    "name": "CNAIR Rovinietă",
+    "country": ["ro"],
+    "domain": "erovinieta",
+    "codeowners": ["@cnecrea"],
+    "requirements": [],
+    "iot_class": "cloud_polling",
+    "config_flow": true,
+    "documentation": "https://github.com/cnecrea/erovinieta",
+    "issue_tracker": "https://github.com/cnecrea/erovinieta/issues",
+    "render_readme": true,
+    "version": "1.0.0"
+}
