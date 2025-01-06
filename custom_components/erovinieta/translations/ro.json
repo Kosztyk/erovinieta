@@ -1,0 +1,33 @@
+{
+    "title": "CNAIR eRovinieta",
+    "config": {
+        "step": {
+            "user": {
+                "title": "Conectare la eRovinieta",
+                "description": "Vă rugăm să introduceți datele de autentificare, Vă rugăm să introduceți datele de autentificare",
+                "data": {
+                    "username": "Utilizator",
+                    "password": "Parolă",
+                    "update_interval": "Interval de actualizare (minute)",
+                    "istoric_tranzactii": "Istoric tranzacții (ani)"
+                }
+            }
+        },
+        "error": {
+            "authentication_failed": "Autentificarea a eșuat. Verificați datele introduse."
+        },
+        "abort": {}
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Opțiuni eRovinieta",
+                "description": "Configurați intervalul de actualizare și istoricul de tranzacții",
+                "data": {
+                    "update_interval": "Interval de actualizare (minute)",
+                    "istoric_tranzactii": "Istoric tranzacții (ani)"
+                }
+            }
+        }
+    }
+}
