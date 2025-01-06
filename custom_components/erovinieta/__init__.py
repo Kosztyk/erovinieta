@@ -15,12 +15,12 @@ PLATFORMS = ["sensor"]
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Setează integrarea folosind configuration.yaml (nu este utilizat pentru această integrare)."""
-    _LOGGER.debug("Configurația YAML nu este suportată pentru integrarea Erovinieta.")
+    _LOGGER.debug("Configurația YAML nu este suportată pentru integrarea CNAIR eRovinieta.")
     return True
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Setează integrarea folosind ConfigFlow."""
-    _LOGGER.info("Setăm integrarea Erovinieta pentru utilizatorul %s", entry.data["username"])
+    _LOGGER.info("Configurăm integrarea CNAIR eRovinieta pentru utilizatorul %s", entry.data["username"])
 
     # Creează instanța API și autentifică
     api = ErovinietaAPI(entry.data["username"], entry.data["password"])
