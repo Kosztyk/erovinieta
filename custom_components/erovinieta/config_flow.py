@@ -31,7 +31,7 @@ class ErovinietaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 api = ErovinietaAPI(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
                 await self.hass.async_add_executor_job(api.authenticate)
-                return self.async_create_entry(title="CNAIR eRovinieta", data=user_input)
+                return self.async_create_entry(title=f"CNAIR eRovinieta ({user_input.get(CONF_USERNAME, 'Utilizator nespecificat')})", data=user_input)
             except Exception:
                 errors["base"] = "authentication_failed"
 
