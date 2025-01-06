@@ -18,7 +18,9 @@ Această integrare pentru Home Assistant oferă **monitorizare completă** pentr
       - **Adresă**: Adresa completă a utilizatorului.
       - **Localitate și Județ**: Locația detaliată a utilizatorului.
 
-### Senzor `Vehicul`:
+
+
+## Senzor `Vehicul`:
   - **🔍 Monitorizare Vehicul**:
       - Afișează detalii complete despre vehiculul care deține o rovinietă valabilă (vehicul pentru care a fost achitată rovinieta din contul său).
   - **📊 Atribute disponibile**:
@@ -30,7 +32,9 @@ Această integrare pentru Home Assistant oferă **monitorizare completă** pentr
       - **Data început vignietă**: Data începerii valabilității vignietei.
       - **Data sfârșit vignietă**: Data expirării vignietei.
 
-### Senzor `Raport tranzacții`:
+
+
+## Senzor `Raport tranzacții`:
   - **📊 Monitorizare tranzacții**:
       - Afișează un raport detaliat al tranzacțiilor realizate.
   - **📊 Atribute disponibile**:
@@ -39,11 +43,29 @@ Această integrare pentru Home Assistant oferă **monitorizare completă** pentr
       - **Perioadă analizată**: Perioada de timp pentru care sunt adunate tranzacțiile.
       - **Suma totală plătită**: Suma totală a tranzacțiilor înregistrate.
 
+
+## Senzor `Restanțe treceri pod`:
+  - **📊 Monitorizare treceri pod**:
+      - Indică dacă există treceri de pod neplătite din ultimele 24 de ore.
+  - **📊 Atribute disponibile**:
+      - **Număr treceri neplătite**: Numărul total al trecerilor de pod neplătite din ultimele 24 de ore.
+
+**🔍 Atribut principal**:  
+- **Da**: În cazul în care există cel puțin o trecere de pod neplătită.  
+- **Nu**: În cazul în care nu există nicio trecere de pod neplătită.
+
+
+## Senzor `Sold peaje neexpirate`:
+  - **📊 Monitorizare sold peaje neexpirate**:
+      - Afișează valoarea totală a soldului pentru peajele neexpirate.
+  - **📊 Atribute disponibile**:
+      - **Sold peaje neexpirate**: Valoarea totală a soldului pentru peajele neexpirate.
+
 ---
 
 ## ⚙️ Configurare
 
-### 🛠️ Interfața UI:
+## 🛠️ Interfața UI:
 1. Adaugă integrarea din meniul **Setări > Dispozitive și Servicii > Adaugă Integrare**.
 2. Introdu datele contului eRovinieta:
    - **Nume utilizator**: username-ul contului tău eRovinieta.
@@ -52,7 +74,7 @@ Această integrare pentru Home Assistant oferă **monitorizare completă** pentr
    - **Istoric tranzacții**: Selectează câți ani de tranzacții dorești să aduci (valoare implicită: 2 ani).
 3. Apasă **Salvează** pentru a finaliza configurarea.
 
-### Observații:
+## Observații:
 - Asigură-te că ai introdus corect datele de autentificare.
 - Dacă vrei să aduci tranzacțiile pentru o perioadă mai lungă de timp, selectează un număr mai mare de ani în configurare.
 
@@ -60,12 +82,12 @@ Această integrare pentru Home Assistant oferă **monitorizare completă** pentr
 
 ## 🚀 Instalare
 
-### 💡 Instalare prin HACS:
+## 💡 Instalare prin HACS:
 1. Adaugă [depozitul personalizat](https://github.com/cnecrea/erovinieta) în HACS. 🛠️
 2. Caută integrarea **CNAIR eRovinieta** și instaleaz-o. ✅
 3. Repornește Home Assistant și configurează integrarea. 🔄
 
-### ✋ Instalare manuală:
+## ✋ Instalare manuală:
 1. Clonează sau descarcă [depozitul GitHub](https://github.com/cnecrea/erovinieta). 📂
 2. Copiază folderul `custom_components/erovinieta` în directorul `custom_components` al Home Assistant. 🗂️
 3. Repornește Home Assistant și configurează integrarea. 🔧
@@ -97,7 +119,7 @@ actions:
 
 ```
 
-### 🔍 Card pentru Dashboard:
+## 🔍 Card pentru Dashboard:
 Afișează datele despre utilizator, vehicul și tranzacții pe interfața Home Assistant.
 
 ```yaml
