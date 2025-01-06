@@ -27,6 +27,10 @@ URL_DETALII_TRANZACTIE = (
     "series={series}&transactionType=3"
 )
 
+# URL pentru obținerea istoricului de treceri de pod
+URL_TRECERI_POD = f"{BASE_URL}/rest/anonymous/bridge/detectionsAndPayments/getDetectionsAndPayments"
+
+
 # Configurația cheilor pentru ConfigFlow
 CONF_USERNAME = "username"
 CONF_PASSWORD = "password"
