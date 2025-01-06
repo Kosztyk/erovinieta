@@ -119,6 +119,29 @@ actions:
 
 ```
 
+### 🔔 Automatizare pentru restanțe la trecerile de pod:
+Creează o automatizare pentru a primi notificări atunci când există treceri de pod neplătite. Automatizarea se declanșează automat în momentul în care senzorul indică restanțe și trimite un mesaj cu detalii despre vehiculul afectat.
+
+```yaml
+alias: Notificare restanțe treceri pod
+description: Notificare atunci când există treceri de pod neplătite
+mode: single
+trigger:
+  - platform: state
+    entity_id: sensor.erovinieta_restanta_treceri_pod_[numar_inmatriculare]
+    to: "Da"
+condition: []
+action:
+  - service: notify.notify
+    data:
+      title: Restanțe la treceri pod
+      message: >-
+        Vehiculul cu numărul de înmatriculare {{
+        state_attr('sensor.erovinieta_vehicul_[numar_inmatriculare]', 'Număr de înmatriculare') }}
+        are treceri de pod neplătite!
+```
+
+
 ## 🔍 Card pentru Dashboard:
 Afișează datele despre utilizator, vehicul și tranzacții pe interfața Home Assistant.
 
