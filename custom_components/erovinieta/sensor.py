@@ -710,11 +710,11 @@ class SoldSensor(ErovinietaBaseSensor):
 
         # Atribute implicite dacă nu există date relevante
         attributes.update({
-            "ID": "",
-            "Sold Peaje Neexpirate": 0,
-            "Sumă Detectări Neplătite": 0,
-            "Sumă Detectări Plătite": 0,
-            "Sumă Detectări în Așteptare": 0,
-            "VIN": "Necunoscut",
+            #"ID": "",
+            "Sold peaje neexpirate": 0,
+            #"Sumă Detectări Neplătite": 0,
+            #"Sumă Detectări Plătite": 0,
+            #"Sumă Detectări în Așteptare": 0,
+            #"VIN": "Necunoscut",
         })
         return attributes
