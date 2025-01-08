@@ -1,4 +1,4 @@
-"""ConfigFlow și OptionsFlow pentru integrarea Erovinieta."""
+"""ConfigFlow și OptionsFlow pentru integrarea CNAIR eRovinieta."""
 
 from homeassistant import config_entries
 from homeassistant.core import callback
@@ -12,7 +12,7 @@ from .const import (
     MIN_UPDATE_INTERVAL,
     MAX_UPDATE_INTERVAL,
     CONF_ISTORIC_TRANZACTII,
-    ISTORIC_TRANZACTII_DEFAULT, 
+    ISTORIC_TRANZACTII_DEFAULT,
 )
 from .api_manager import ErovinietaAPI
 
@@ -27,13 +27,29 @@ class ErovinietaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            # Testăm autentificarea
-            try:
-                api = ErovinietaAPI(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
-                await self.hass.async_add_executor_job(api.authenticate)
-                return self.async_create_entry(title=f"CNAIR eRovinieta ({user_input.get(CONF_USERNAME, 'Utilizator nespecificat')})", data=user_input)
-            except Exception:
-                errors["base"] = "authentication_failed"
+            # Validare manuală pentru intervalul de actualizare
+            update_interval = user_input.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+            if update_interval < MIN_UPDATE_INTERVAL or update_interval > MAX_UPDATE_INTERVAL:
+                errors["update_interval"] = "update_interval_too_low"
+
+            if not errors:
+                # Testăm autentificarea
+                try:
+                    api = ErovinietaAPI(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
+                    await self.hass.async_add_executor_job(api.authenticate)
+                    return self.async_create_entry(
+                        title=f"CNAIR eRovinieta ({user_input.get(CONF_USERNAME, 'Utilizator nespecificat')})",
+                        data={
+                            CONF_USERNAME: user_input[CONF_USERNAME],
+                            CONF_PASSWORD: user_input[CONF_PASSWORD],
+                        },
+                        options={
+                            CONF_UPDATE_INTERVAL: update_interval,
+                            CONF_ISTORIC_TRANZACTII: user_input.get(CONF_ISTORIC_TRANZACTII, ISTORIC_TRANZACTII_DEFAULT),
+                        },
+                    )
+                except Exception:
+                    errors["base"] = "authentication_failed"
 
         schema = vol.Schema({
             vol.Required(CONF_USERNAME): str,
@@ -41,7 +57,7 @@ class ErovinietaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             vol.Optional(CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL): vol.All(
                 vol.Coerce(int), vol.Range(min=MIN_UPDATE_INTERVAL, max=MAX_UPDATE_INTERVAL)
             ),
-            vol.Optional(CONF_ISTORIC_TRANZACTII, default=ISTORIC_TRANZACTII_DEFAULT): vol.In([1,2,3,4,5,6,7,8,9,10]),
+            vol.Optional(CONF_ISTORIC_TRANZACTII, default=ISTORIC_TRANZACTII_DEFAULT): vol.In([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
         })
 
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
@@ -62,8 +78,17 @@ class ErovinietaOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         """Prima etapă: configurarea opțiunilor."""
+        errors = {}
+
         if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
+            # Validare manuală pentru intervalul de actualizare
+            update_interval = user_input.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+            if update_interval < MIN_UPDATE_INTERVAL or update_interval > MAX_UPDATE_INTERVAL:
+                errors["update_interval"] = "update_interval_too_low"
+
+            if not errors:
+                # Salvăm opțiunile actualizate
+                return self.async_create_entry(title="", data=user_input)
 
         schema = vol.Schema({
             vol.Optional(CONF_UPDATE_INTERVAL, default=self.config_entry.options.get(
@@ -78,4 +103,4 @@ class ErovinietaOptionsFlow(config_entries.OptionsFlow):
             ),
         })
 
-        return self.async_show_form(step_id="init", data_schema=schema)
+        return self.async_show_form(step_id="init", data_schema=schema, errors=errors)
