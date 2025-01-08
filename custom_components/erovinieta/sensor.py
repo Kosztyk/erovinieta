@@ -1,4 +1,4 @@
-"""Platforma sensor pentru integrarea Erovinieta."""
+"""Platforma sensor pentru integrarea CNAIR eRovinieta."""
 
 import logging
 from datetime import datetime
