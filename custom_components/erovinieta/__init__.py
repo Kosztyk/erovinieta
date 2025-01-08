@@ -1,10 +1,11 @@
-"""Punctul de inițializare pentru integrarea Erovinieta."""
+"""Punctul de inițializare pentru integrarea CNAIR eRovinieta."""
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
+from datetime import timedelta
 import logging
-from .const import DOMAIN
+from .const import DOMAIN, CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL
 from .coordinator import ErovinietaCoordinator
 from .api_manager import ErovinietaAPI
 
@@ -30,14 +31,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.error("Eroare la autentificarea utilizatorului %s: %s", entry.data["username"], e)
         return False
 
-    # Validează intervalul de actualizare
-    update_interval = entry.data.get("update_interval", 3600)
-    if not isinstance(update_interval, int) or update_interval <= 0:
-        _LOGGER.warning(
-            "Interval de actualizare invalid (%s). Se utilizează valoarea implicită (3600).",
-            update_interval,
-        )
-        update_interval = 3600
+    # Obține intervalul de actualizare
+    update_interval = entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
 
     # Creează coordinatorul
     coordinator = ErovinietaCoordinator(hass, api, update_interval)
@@ -57,6 +52,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except Exception as e:
         _LOGGER.error("Eroare la forward entry setups: %s", e)
         return False
+
+    # Înregistrează ascultătorul pentru actualizări
+    entry.async_on_unload(entry.add_update_listener(async_update_entry))
+
+    return True
+
+async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Aplică modificările aduse opțiunilor."""
+    _LOGGER.info("Actualizăm opțiunile pentru integrarea Erovinieta.")
+
+    # Obține noile opțiuni
+    update_interval = entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+
+    # Actualizează intervalul în Coordinator
+    coordinator: ErovinietaCoordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    coordinator.update_interval = timedelta(seconds=update_interval)
+    _LOGGER.info("Intervalul de actualizare a fost setat la %s secunde.", update_interval)
+
+    # Forțează o actualizare
+    await coordinator.async_request_refresh()
 
     return True
 
