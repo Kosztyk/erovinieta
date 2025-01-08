@@ -1,4 +1,4 @@
-"""Constante pentru integrarea Erovinieta."""
+"""Constante pentru integrarea CNAIR eRovinieta."""
 
 DOMAIN = "erovinieta"
 NAME = "CNAIR eRovinieta"
