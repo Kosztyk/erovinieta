@@ -1,4 +1,5 @@
-"""Manager API pentru integrarea Erovinieta."""
+"""Manager API pentru integrarea CNAIR eRovinieta."""
+
 import requests
 import logging
 from datetime import datetime
