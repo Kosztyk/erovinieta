@@ -14,7 +14,7 @@ from .const import (
     CONF_ISTORIC_TRANZACTII,
     ISTORIC_TRANZACTII_DEFAULT,
 )
-from .api_manager import ErovinietaAPI
+from .api import ErovinietaAPI
 
 
 class ErovinietaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
