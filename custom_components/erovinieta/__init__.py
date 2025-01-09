@@ -7,7 +7,7 @@ from datetime import timedelta
 import logging
 from .const import DOMAIN, CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL
 from .coordinator import ErovinietaCoordinator
-from .api_manager import ErovinietaAPI
+from .api import ErovinietaAPI
 
 _LOGGER = logging.getLogger(__name__)
 
