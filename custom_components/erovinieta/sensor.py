@@ -182,13 +182,12 @@ class ErovinietaBaseSensor(CoordinatorEntity, SensorEntity):
 # -------------------------------------------------------------------
 #                     DateUtilizatorSensor
 # -------------------------------------------------------------------
-
 class DateUtilizatorSensor(ErovinietaBaseSensor):
     """Senzor pentru afișarea datelor utilizatorului."""
 
     def __init__(self, coordinator, config_entry):
         """Inițializează senzorul DateUtilizatorSensor."""
-        user_data = coordinator.data.get("user", {})
+        user_data = coordinator.data.get("user_data", {})
         utilizator_data = user_data.get("utilizator", {})
         user_identifier = utilizator_data.get("nume", "necunoscut").replace(" ", "_").lower()
         entity_id = f"sensor.{DOMAIN}_date_utilizator_{user_identifier}"
@@ -214,28 +213,28 @@ class DateUtilizatorSensor(ErovinietaBaseSensor):
     @property
     def state(self):
         """Returnează starea senzorului (atribut principal)."""
-        if not self.coordinator.data or "user" not in self.coordinator.data:
-            _LOGGER.debug("DateUtilizatorSensor - Nu există date['user'] în coordinator.")
+        if not self.coordinator.data or "user_data" not in self.coordinator.data:
+            _LOGGER.debug("DateUtilizatorSensor - Nu există date în coordinator.")
             return "nespecificat"
 
-        user_data = self.coordinator.data["user"]
+        user_data = self.coordinator.data["user_data"]
         user_id = user_data.get("id")
         return user_id if user_id is not None else "nespecificat"
 
     @property
     def extra_state_attributes(self):
         """Returnează atributele suplimentare."""
-        if not self.coordinator.data or "user" not in self.coordinator.data:
-            _LOGGER.debug("DateUtilizatorSensor - Nu există date['user'] în coordinator.")
+        if not self.coordinator.data or "user_data" not in self.coordinator.data:
+            _LOGGER.debug("DateUtilizatorSensor - Nu există date în coordinator.")
             return {}
 
-        user_data = self.coordinator.data["user"]
+        user_data = self.coordinator.data["user_data"]
         utilizator_data = user_data.get("utilizator", {})
         tara_data = user_data.get("tara", {})
         denumire_tara = tara_data.get("denumire", "nespecificat")
 
         def safe_get(data, key, default="nespecificat"):
-            """Returnează valoarea pentru o cheie sau 'Nespecificat' dacă e null."""
+            """Returnează valoarea pentru o cheie sau 'nespecificat' dacă e null."""
             value = data.get(key)
             return value if value is not None else default
 
@@ -243,11 +242,8 @@ class DateUtilizatorSensor(ErovinietaBaseSensor):
             """Formatează corect numele cu inițiale mari."""
             return " ".join(word.capitalize() for word in name.split())
 
-        # Formatează denumirea țării
-        denumire_tara_formatted = capitalize_name(denumire_tara)
-
         # Determinăm valorile pentru Județ și Localitate în funcție de țară
-        if denumire_tara_formatted == "Romania":
+        if denumire_tara.lower() == "romania":
             judet = safe_get(user_data.get("judet", {}), "nume")
             localitate = safe_get(user_data.get("localitate", {}), "nume")
         else:
@@ -264,12 +260,11 @@ class DateUtilizatorSensor(ErovinietaBaseSensor):
             "Adresa": safe_get(user_data, "adresa"),
             "Localitate": localitate,
             "Județ": judet,
-            "Țară": denumire_tara_formatted,
+            "Țară": capitalize_name(denumire_tara),
         }
 
         attributes["attribution"] = ATTRIBUTION
         return attributes
-
 
 # -------------------------------------------------------------------
 #                     VehiculSensor
@@ -406,12 +401,15 @@ class RaportTranzactiiSensor(ErovinietaBaseSensor):
 
     def __init__(self, coordinator, config_entry):
         """Inițializează senzorul RaportTranzactiiSensor."""
-        user_data = coordinator.data.get("user", {})
+        # Accesăm datele utilizatorului din "user_data"
+        user_data = coordinator.data.get("user_data", {})
         utilizator_data = user_data.get("utilizator", {})
         user_identifier = utilizator_data.get("nume", "necunoscut").replace(" ", "_").lower()
+        
+        # Setăm entity_id și unique_id pe baza numelui utilizatorului
         entity_id = f"sensor.{DOMAIN}_raport_tranzactii_{user_identifier}"
         unique_id = f"{DOMAIN}_raport_tranzactii_{user_identifier}"
-
+        
         # Inițializăm clasa de bază
         super().__init__(
             coordinator=coordinator,
