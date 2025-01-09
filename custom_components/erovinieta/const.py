@@ -8,7 +8,7 @@ ATTRIBUTION = "Date furnizate de www.erovinieta.ro"
 # URL-urile API-ului
 BASE_URL = "https://www.erovinieta.ro/vignettes-portal-web"
 URL_LOGIN = f"{BASE_URL}/login"
-URL_GET_USER_DATA = f"{BASE_URL}/rest/anonymous/getUserData"
+URL_GET_USER_DATA = f"{BASE_URL}/rest/setariUtilizatorPortal"
 URL_GET_PAGINATED = f"{BASE_URL}/rest/desktop/home/getDataPaginated"
 URL_GET_COUNTRIES = f"{BASE_URL}/rest/anonymous/getCountries"
 
@@ -41,3 +41,4 @@ DEFAULT_UPDATE_INTERVAL = 3600  # 1 oră (în secunde)
 MIN_UPDATE_INTERVAL = 300       # Minim 5 minute (în secunde)
 MAX_UPDATE_INTERVAL = 86400     # Maxim 1 zi (în secunde)
 DEFAULT_TRANSACTION_HISTORY_YEARS = 2
+
