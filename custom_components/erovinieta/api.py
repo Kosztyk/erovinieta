@@ -135,7 +135,7 @@ class ErovinietaAPI:
         _LOGGER.debug("Cerere către URL-ul utilizator: %s", url)
         return self._request("GET", url)
 
-    def get_paginated_data(self, limit=4, page=0):
+    def get_paginated_data(self, limit=20, page=0):
         """Obține date paginate."""
         base_url = f"{URL_GET_PAGINATED}?limit={limit}&page={page}"
         url = self._generate_timestamp_url(base_url, is_first_param=False)
