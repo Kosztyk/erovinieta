@@ -1,0 +1,40 @@
+{
+    "title": "CNAIR eRovinieta",
+    "config": {
+        "step": {
+            "user": {
+                "title": "Anmeldung beim CNAIR eRovinieta-Dienst",
+                "description": "Geben Sie Ihren Benutzernamen und Ihr Passwort ein, um die Integration mit Ihrem eRovinieta-Konto zu verbinden.",
+                "data": {
+                    "username": "Benutzername",
+                    "password": "Passwort",
+                    "update_interval": "Aktualisierungsintervall (Sekunden)",
+                    "istoric_tranzactii": "Transaktionsverlauf (Jahre)"
+                },
+                "errors": {
+                    "authentication_failed": "Die Authentifizierung ist fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.",
+                    "update_interval_too_low": "Das Aktualisierungsintervall muss zwischen {min} und {max} Sekunden liegen."
+                }
+            }
+        },
+        "error": {
+            "authentication_failed": "Die Authentifizierung ist fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben."
+        },
+        "abort": {}
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Einstellungen und Optionen für CNAIR eRovinieta",
+                "description": "Konfigurieren Sie das Aktualisierungsintervall und den Transaktionsverlauf.",
+                "data": {
+                    "update_interval": "Aktualisierungsintervall (Sekunden)",
+                    "istoric_tranzactii": "Transaktionsverlauf (Jahre)"
+                },
+                "errors": {
+                    "update_interval_too_low": "Das Aktualisierungsintervall muss zwischen {min} und {max} Sekunden liegen."
+                }
+            }
+        }
+    }
+}
