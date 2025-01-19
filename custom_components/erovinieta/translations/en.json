@@ -1,0 +1,40 @@
+{
+    "title": "CNAIR eRovinieta",
+    "config": {
+        "step": {
+            "user": {
+                "title": "Login to CNAIR eRovinieta Service",
+                "description": "Enter your username and password to connect the integration to your eRovinieta account.",
+                "data": {
+                    "username": "Username",
+                    "password": "Password",
+                    "update_interval": "Update interval (seconds)",
+                    "istoric_tranzactii": "Transaction history (years)"
+                },
+                "errors": {
+                    "authentication_failed": "Authentication failed. Please check your credentials.",
+                    "update_interval_too_low": "Update interval must be between {min} and {max} seconds."
+                }
+            }
+        },
+        "error": {
+            "authentication_failed": "Authentication failed. Please check your credentials."
+        },
+        "abort": {}
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Settings and Options for CNAIR eRovinieta",
+                "description": "Configure the update interval and transaction history.",
+                "data": {
+                    "update_interval": "Update interval (seconds)",
+                    "istoric_tranzactii": "Transaction history (years)"
+                },
+                "errors": {
+                    "update_interval_too_low": "Update interval must be between {min} and {max} seconds."
+                }
+            }
+        }
+    }
+}
