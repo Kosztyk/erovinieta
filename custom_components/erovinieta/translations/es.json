@@ -10,9 +10,6 @@
                     "password": "Contraseña",
                     "update_interval": "Intervalo de actualización (segundos)",
                     "istoric_tranzactii": "Historial de transacciones (años)"
-                },
-                "errors": {
-                    "authentication_failed": "La autenticación ha fallado. Verifique los datos ingresados."
                 }
             }
         },
