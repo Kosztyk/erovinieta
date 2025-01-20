@@ -12,8 +12,7 @@
                     "istoric_tranzactii": "Istoric tranzacții (ani)"
                 },
                 "errors": {
-                    "authentication_failed": "Autentificarea a eșuat. Verificați datele introduse.",
-                    "update_interval_too_low": "Intervalul de actualizare trebuie să fie între {min} și {max} secunde."
+                    "authentication_failed": "Autentificarea a eșuat. Verificați datele introduse."
                 }
             }
         },
@@ -25,14 +24,11 @@
     "options": {
         "step": {
             "init": {
-                "title": "Setări și opțiuni pentru CNAIR eRovinieta.",
-                "description": "Configurați intervalul de actualizare și istoricul de tranzacții",
+                "title": "Setări și opțiuni pentru CNAIR eRovinieta",
+                "description": "Configurați intervalul de actualizare și istoricul de tranzacții.",
                 "data": {
                     "update_interval": "Interval de actualizare (secunde)",
                     "istoric_tranzactii": "Istoric tranzacții (ani)"
-                },
-                "errors": {
-                    "update_interval_too_low": "Intervalul de actualizare trebuie să fie între {min} și {max} secunde."
                 }
             }
         }
