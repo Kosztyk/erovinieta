@@ -12,8 +12,7 @@
                     "istoric_tranzactii": "Historique des transactions (années)"
                 },
                 "errors": {
-                    "authentication_failed": "Échec de l'authentification. Veuillez vérifier vos informations.",
-                    "update_interval_too_low": "L'intervalle de mise à jour doit être compris entre {min} et {max} secondes."
+                    "authentication_failed": "Échec de l'authentification. Veuillez vérifier vos informations."
                 }
             }
         },
@@ -30,9 +29,6 @@
                 "data": {
                     "update_interval": "Intervalle de mise à jour (secondes)",
                     "istoric_tranzactii": "Historique des transactions (années)"
-                },
-                "errors": {
-                    "update_interval_too_low": "L'intervalle de mise à jour doit être compris entre {min} et {max} secondes."
                 }
             }
         }
