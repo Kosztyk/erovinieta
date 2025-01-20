@@ -1,14 +1,12 @@
 {
-    "dependencies": [],
-    "requirements": [],
-    "iot_class": "cloud_polling",
-    "config_flow": true,
     "domain": "erovinieta",
     "name": "CNAIR eRovinieta",
-    "version": "2.1.0",
-    "documentation": "https://github.com/cnecrea/erovinieta",
-    "issue_tracker": "https://github.com/cnecrea/erovinieta/issues",
     "codeowners": ["@cnecrea"],
-    "translations": "translations",
-    "platforms": ["sensor"]
+    "config_flow": true,
+    "dependencies": [],
+    "documentation": "https://github.com/cnecrea/erovinieta",
+    "iot_class": "cloud_polling",
+    "issue_tracker": "https://github.com/cnecrea/erovinieta/issues",
+    "requirements": [],
+    "version": "2.1.0"
 }
