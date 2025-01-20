@@ -12,8 +12,7 @@
                     "istoric_tranzactii": "Historial de transacciones (años)"
                 },
                 "errors": {
-                    "authentication_failed": "La autenticación ha fallado. Verifique los datos ingresados.",
-                    "update_interval_too_low": "El intervalo de actualización debe estar entre {min} y {max} segundos."
+                    "authentication_failed": "La autenticación ha fallado. Verifique los datos ingresados."
                 }
             }
         },
@@ -30,9 +29,6 @@
                 "data": {
                     "update_interval": "Intervalo de actualización (segundos)",
                     "istoric_tranzactii": "Historial de transacciones (años)"
-                },
-                "errors": {
-                    "update_interval_too_low": "El intervalo de actualización debe estar entre {min} y {max} segundos."
                 }
             }
         }
