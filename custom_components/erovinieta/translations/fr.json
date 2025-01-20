@@ -10,9 +10,6 @@
                     "password": "Mot de passe",
                     "update_interval": "Intervalle de mise à jour (secondes)",
                     "istoric_tranzactii": "Historique des transactions (années)"
-                },
-                "errors": {
-                    "authentication_failed": "Échec de l'authentification. Veuillez vérifier vos informations."
                 }
             }
         },
