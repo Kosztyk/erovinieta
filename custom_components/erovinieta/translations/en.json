@@ -10,9 +10,6 @@
                     "password": "Password",
                     "update_interval": "Update interval (seconds)",
                     "istoric_tranzactii": "Transaction history (years)"
-                },
-                "errors": {
-                    "authentication_failed": "Authentication failed. Please check your credentials."
                 }
             }
         },
