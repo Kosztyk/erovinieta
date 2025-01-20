@@ -10,9 +10,6 @@
                     "password": "Passwort",
                     "update_interval": "Aktualisierungsintervall (Sekunden)",
                     "istoric_tranzactii": "Transaktionsverlauf (Jahre)"
-                },
-                "errors": {
-                    "authentication_failed": "Die Authentifizierung ist fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben."
                 }
             }
         },
