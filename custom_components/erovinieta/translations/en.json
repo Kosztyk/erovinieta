@@ -12,8 +12,7 @@
                     "istoric_tranzactii": "Transaction history (years)"
                 },
                 "errors": {
-                    "authentication_failed": "Authentication failed. Please check your credentials.",
-                    "update_interval_too_low": "Update interval must be between {min} and {max} seconds."
+                    "authentication_failed": "Authentication failed. Please check your credentials."
                 }
             }
         },
@@ -30,9 +29,6 @@
                 "data": {
                     "update_interval": "Update interval (seconds)",
                     "istoric_tranzactii": "Transaction history (years)"
-                },
-                "errors": {
-                    "update_interval_too_low": "Update interval must be between {min} and {max} seconds."
                 }
             }
         }
