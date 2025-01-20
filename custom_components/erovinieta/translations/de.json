@@ -12,8 +12,7 @@
                     "istoric_tranzactii": "Transaktionsverlauf (Jahre)"
                 },
                 "errors": {
-                    "authentication_failed": "Die Authentifizierung ist fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.",
-                    "update_interval_too_low": "Das Aktualisierungsintervall muss zwischen {min} und {max} Sekunden liegen."
+                    "authentication_failed": "Die Authentifizierung ist fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben."
                 }
             }
         },
@@ -30,9 +29,6 @@
                 "data": {
                     "update_interval": "Aktualisierungsintervall (Sekunden)",
                     "istoric_tranzactii": "Transaktionsverlauf (Jahre)"
-                },
-                "errors": {
-                    "update_interval_too_low": "Das Aktualisierungsintervall muss zwischen {min} und {max} Sekunden liegen."
                 }
             }
         }
