@@ -40,7 +40,7 @@ jobs:
           fi
 
           # Definim calea către manifest.json
-          MANIFEST_PATH="custom_components/eonromania/manifest.json"
+          MANIFEST_PATH="custom_components/erovinieta/manifest.json"
 
           # Verificăm dacă fișierul există
           if [ ! -f "$MANIFEST_PATH" ]; then
@@ -89,25 +89,25 @@ jobs:
           PAT: ${{ secrets.PAT_TOKEN }}  # Token-ul salvat ca secret
         run: |
           # Configurare GitHub Actions bot
-          git config user.name "eonromania-release-bot"
-          git config user.email "eonromania-bot@users.noreply.github.com"
+          git config user.name "erovinieta-release-bot"
+          git config user.email "erovinieta-bot@users.noreply.github.com"
           
           # Setează URL-ul remote pentru autentificare cu token
-          git remote set-url origin https://x-access-token:${PAT}@github.com/cnecrea/eonromania.git
+          git remote set-url origin https://x-access-token:${PAT}@github.com/cnecrea/erovinieta.git
           
           # Adaugă și face commit la modificări
-          git add custom_components/eonromania/manifest.json
+          git add custom_components/erovinieta/manifest.json
           git commit -m "Update version to ${{ env.new_version }}"
           
           # Push la modificări
           git push origin HEAD
 
-      # 5. Creează un fișier .zip doar cu conținutul folderului eonromania
+      # 5. Creează un fișier .zip doar cu conținutul folderului erovinieta
       - name: Create ZIP Archive
         run: |
           mkdir -p dist
-          cd custom_components/eonromania
-          zip -r ../../dist/eonromania.zip ./*
+          cd custom_components/erovinieta
+          zip -r ../../dist/erovinieta.zip ./*
 
       # 6. Creează un release pe GitHub ca draft
       - name: Create GitHub Release
@@ -119,7 +119,7 @@ jobs:
             ## Lansare de tip draft
             - Această lansare a fost generată automat de GitHub Actions.
             - Verificați conținutul înainte de publicare.
-          files: dist/eonromania.zip  # Include fișierul ZIP în release
+          files: dist/erovinieta.zip  # Include fișierul ZIP în release
           draft: true  # Creează release-ul ca draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token-ul implicit GitHub
