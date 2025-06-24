@@ -85,7 +85,14 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
                 # Creează senzor SoldSensor pentru fiecare vehicul
                 sensors.append(SoldSensor(coordinator, config_entry, plate_no))
+                sensors.append(VINSensor(coordinator, config_entry, vehicul))
+                sensors.append(CertificateSeriesSensor(coordinator, config_entry, vehicul))
+                sensors.append(CountrySensor(coordinator, config_entry, vehicul))
+                sensors.append(VignetteCategorySensor(coordinator, config_entry, vehicul))
+                sensors.append(VignetteStartDateSensor(coordinator, config_entry, vehicul))
+                sensors.append(VignetteEndDateSensor(coordinator, config_entry, vehicul))
                 _LOGGER.debug("Senzor SoldSensor creat pentru vehiculul cu număr: %s", plate_no)
+                # ——— Noi senzori detaliu vignietă ———
 
                 # Adaugă vehiculul în vehicule_data
                 vehicule_data.append({
@@ -225,7 +232,7 @@ class DateUtilizatorSensor(ErovinietaBaseSensor):
     def extra_state_attributes(self):
         """Returnează atributele suplimentare."""
         if not self.coordinator.data or "user_data" not in self.coordinator.data:
-            _LOGGER.debug("DateUtilizatorSensor - Nu există date în coordinator.")
+            _LOGGER.debug("DateUtilizatorSensor - Nu există date îny coordinator.")
             return {}
 
         user_data = self.coordinator.data["user_data"]
@@ -735,3 +742,143 @@ class SoldSensor(ErovinietaBaseSensor):
             "Sold peaje neexpirate": 0,
         })
         return attributes
+# -------------------------------------------------------------------
+#             Noi senzori detaliu vignietă
+# -------------------------------------------------------------------
+
+class VINSensor(ErovinietaBaseSensor):
+    """Numărul de serie (VIN) al vehiculului."""
+    def __init__(self, coordinator, config_entry, vehicul):
+        plate = vehicul["entity"].get("plateNo", "")
+        super().__init__(
+            coordinator, config_entry,
+            name=f"VIN {plate}",
+            unique_id=f"{DOMAIN}_vin_{plate}",
+            entity_id=f"sensor.{DOMAIN}_vin_{plate}",
+            icon="mdi:barcode",
+        )
+        self.vehicul = vehicul
+
+    @property
+    def state(self):
+        return self.vehicul["entity"].get("vin", "Necunoscut")
+
+
+class CertificateSeriesSensor(ErovinietaBaseSensor):
+    """Seria certificatului vehiculului."""
+    def __init__(self, coordinator, config_entry, vehicul):
+        plate = vehicul["entity"].get("plateNo", "")
+        super().__init__(
+            coordinator, config_entry,
+            name=f"Seria certificat {plate}",
+            unique_id=f"{DOMAIN}_seria_certificat_{plate}",
+            entity_id=f"sensor.{DOMAIN}_seria_certificat_{plate}",
+            icon="mdi:certificate",
+        )
+        self.vehicul = vehicul
+
+    @property
+    def state(self):
+        return self.vehicul["entity"].get("certificateSeries", "Necunoscut")
+
+
+class CountrySensor(ErovinietaBaseSensor):
+    """Țara vehiculului."""
+    def __init__(self, coordinator, config_entry, vehicul):
+        plate = vehicul["entity"].get("plateNo", "")
+        super().__init__(
+            coordinator, config_entry,
+            name=f"Țara {plate}",
+            unique_id=f"{DOMAIN}_tara_{plate}",
+            entity_id=f"sensor.{DOMAIN}_tara_{plate}",
+            icon="mdi:earth",
+        )
+        self.vehicul = vehicul
+
+    @property
+    def state(self):
+        cid = self.vehicul["entity"].get("tara")
+        return VehiculSensor.get_country_name(cid, self.coordinator.data.get("countries_data", []))
+
+
+class VignetteCategorySensor(ErovinietaBaseSensor):
+    """Categoria vignietei asociate vehiculului."""
+    def __init__(self, coordinator, config_entry, vehicul):
+        plate = vehicul["entity"].get("plateNo", "")
+        super().__init__(
+            coordinator, config_entry,
+            name=f"Categorie vignietă {plate}",
+            unique_id=f"{DOMAIN}_categorie_vignieta_{plate}",
+            entity_id=f"sensor.{DOMAIN}_categorie_vignieta_{plate}",
+            icon="mdi:ticket",
+        )
+        self.vehicul = vehicul
+
+    @property
+    def state(self):
+        vigs = self.vehicul.get("userDetailsVignettes", [])
+        return vigs[0].get("vignetteCategory", "Necunoscut") if vigs else "Necunoscut"
+
+
+class VignetteStartDateSensor(ErovinietaBaseSensor):
+    """Data începerii valabilității vignietei."""
+    def __init__(self, coordinator, config_entry, vehicul):
+        plate = vehicul["entity"].get("plateNo", "")
+        super().__init__(
+            coordinator, config_entry,
+            name=f"Data început vignietă {plate}",
+            unique_id=f"{DOMAIN}_start_vignieta_{plate}",
+            entity_id=f"sensor.{DOMAIN}_start_vignieta_{plate}",
+            icon="mdi:calendar-start",
+        )
+        self.vehicul = vehicul
+
+    @property
+    def state(self):
+        """Returnează data începerii sau 'N/A' dacă nu există."""
+        vigs = self.vehicul.get("userDetailsVignettes", [])
+        if not vigs:
+            return "N/A"
+        ts = vigs[0].get("vignetteStartDate")
+        return format_timestamp(ts) if ts else ""
+
+class VignetteStartDateSensor(ErovinietaBaseSensor):
+    """Senzor pentru data începerii valabilității vignietei."""
+    def __init__(self, coordinator, config_entry, vehicul):
+        plate = vehicul["entity"].get("plateNo", "necunoscut")
+        name = f"Start vignietă {plate}"
+        uid  = f"{DOMAIN}_start_vignieta_{plate}"
+        eid  = f"sensor.{DOMAIN}_start_vignieta_{plate}"
+        super().__init__(coordinator, config_entry, name, uid, eid, icon="mdi:calendar-start")
+        self.vehicul = vehicul
+
+    @property
+    def state(self):
+        vigs = self.vehicul.get("userDetailsVignettes", [])
+        if not vigs:
+            return ""
+        ts = vigs[0].get("vignetteStartDate")
+        if not ts:
+            return ""
+        return datetime.fromtimestamp(ts / 1000).strftime("%Y-%m-%d %H:%M:%S")
+
+
+class VignetteEndDateSensor(ErovinietaBaseSensor):
+    """Senzor pentru data expirării vignietei."""
+    def __init__(self, coordinator, config_entry, vehicul):
+        plate = vehicul["entity"].get("plateNo", "necunoscut")
+        name = f"End vignietă {plate}"
+        uid  = f"{DOMAIN}_end_vignieta_{plate}"
+        eid  = f"sensor.{DOMAIN}_end_vignieta_{plate}"
+        super().__init__(coordinator, config_entry, name, uid, eid, icon="mdi:calendar-end")
+        self.vehicul = vehicul
+
+    @property
+    def state(self):
+        vigs = self.vehicul.get("userDetailsVignettes", [])
+        if not vigs:
+            return ""
+        ts = vigs[0].get("vignetteStopDate")
+        if not ts:
+            return ""
+        return datetime.fromtimestamp(ts / 1000).strftime("%Y-%m-%d %H:%M:%S")
