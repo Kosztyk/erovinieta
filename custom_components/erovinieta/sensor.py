@@ -7,11 +7,25 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.core import callback
+from homeassistant.util import dt as dt_util
+from homeassistant.util import slugify
 
 from .const import DOMAIN, ATTRIBUTION, DEFAULT_TRANSACTION_HISTORY_YEARS
 from .coordinator import ErovinietaCoordinator
 
 _LOGGER = logging.getLogger(__name__)
+
+def format_timestamp(timestamp_millis):
+    """Formatează un timestamp în milisecunde ca dată/oră locală (Home Assistant)."""
+    if not timestamp_millis:
+        return "N/A"
+    try:
+        ts = float(timestamp_millis) / 1000.0
+        dt_utc = dt_util.utc_from_timestamp(ts)
+        dt_local = dt_util.as_local(dt_utc)
+        return dt_local.strftime("%d.%m.%Y %H:%M:%S")
+    except Exception:
+        return "N/A"
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -186,6 +200,16 @@ class ErovinietaBaseSensor(CoordinatorEntity, SensorEntity):
         return self._attr_icon
 
 
+    def _get_current_view_item(self, plate_no: str) -> dict | None:
+        """Returnează obiectul din paginated_data.view pentru placa dată."""
+        view = self.coordinator.data.get("paginated_data", {}).get("view", []) or []
+        for item in view:
+            entity = (item or {}).get("entity") or {}
+            if entity.get("plateNo") == plate_no:
+                return item
+        return None
+
+
 # -------------------------------------------------------------------
 #                     DateUtilizatorSensor
 # -------------------------------------------------------------------
@@ -331,18 +355,8 @@ class VehiculSensor(ErovinietaBaseSensor):
 
     @staticmethod
     def format_timestamp(timestamp_millis):
-        """
-        Formatează un timestamp (în milisecunde) în format:
-        YYYY-MM-DD HH:MM:SS.
-        Returnează șir gol dacă timestamp-ul lipsește.
-        """
-        if timestamp_millis:
-            try:
-                dt = datetime.fromtimestamp(timestamp_millis / 1000)
-                return dt.strftime('%Y-%m-%d %H:%M:%S')
-            except (OSError, ValueError):
-                return "Dată invalidă"
-        return ""
+        """Formatează un timestamp (ms) în ora locală Home Assistant."""
+        return format_timestamp(timestamp_millis)
 
     @property
     def state(self):
@@ -750,135 +764,124 @@ class VINSensor(ErovinietaBaseSensor):
     """Numărul de serie (VIN) al vehiculului."""
     def __init__(self, coordinator, config_entry, vehicul):
         plate = vehicul["entity"].get("plateNo", "")
+        plate_slug = slugify(plate)
         super().__init__(
             coordinator, config_entry,
             name=f"VIN {plate}",
-            unique_id=f"{DOMAIN}_vin_{plate}",
-            entity_id=f"sensor.{DOMAIN}_vin_{plate}",
+            unique_id=f"{DOMAIN}_vin_{plate_slug}",
+            entity_id=f"sensor.{DOMAIN}_vin_{plate_slug}",
             icon="mdi:barcode",
         )
-        self.vehicul = vehicul
+        self._plate = plate
 
     @property
     def state(self):
-        return self.vehicul["entity"].get("vin", "Necunoscut")
+        item = self._get_current_view_item(self._plate)
+        return (item or {}).get("entity", {}).get("vin") or "N/A"
+
 
 
 class CertificateSeriesSensor(ErovinietaBaseSensor):
     """Seria certificatului vehiculului."""
     def __init__(self, coordinator, config_entry, vehicul):
         plate = vehicul["entity"].get("plateNo", "")
+        plate_slug = slugify(plate)
         super().__init__(
             coordinator, config_entry,
             name=f"Seria certificat {plate}",
-            unique_id=f"{DOMAIN}_seria_certificat_{plate}",
-            entity_id=f"sensor.{DOMAIN}_seria_certificat_{plate}",
+            unique_id=f"{DOMAIN}_seria_certificat_{plate_slug}",
+            entity_id=f"sensor.{DOMAIN}_seria_certificat_{plate_slug}",
             icon="mdi:certificate",
         )
-        self.vehicul = vehicul
+        self._plate = plate
 
     @property
     def state(self):
-        return self.vehicul["entity"].get("certificateSeries", "Necunoscut")
+        item = self._get_current_view_item(self._plate)
+        return (item or {}).get("entity", {}).get("certificateSeries") or "N/A"
+
 
 
 class CountrySensor(ErovinietaBaseSensor):
     """Țara vehiculului."""
     def __init__(self, coordinator, config_entry, vehicul):
         plate = vehicul["entity"].get("plateNo", "")
+        plate_slug = slugify(plate)
         super().__init__(
             coordinator, config_entry,
             name=f"Țara {plate}",
-            unique_id=f"{DOMAIN}_tara_{plate}",
-            entity_id=f"sensor.{DOMAIN}_tara_{plate}",
+            unique_id=f"{DOMAIN}_tara_{plate_slug}",
+            entity_id=f"sensor.{DOMAIN}_tara_{plate_slug}",
             icon="mdi:earth",
         )
-        self.vehicul = vehicul
+        self._plate = plate
 
     @property
     def state(self):
-        cid = self.vehicul["entity"].get("tara")
-        return VehiculSensor.get_country_name(cid, self.coordinator.data.get("countries_data", []))
+        item = self._get_current_view_item(self._plate)
+        cid = (item or {}).get("entity", {}).get("tara")
+        return VehiculSensor.get_country_name(cid, self.coordinator.data.get("countries_data", [])) or "N/A"
+
 
 
 class VignetteCategorySensor(ErovinietaBaseSensor):
     """Categoria vignietei asociate vehiculului."""
     def __init__(self, coordinator, config_entry, vehicul):
         plate = vehicul["entity"].get("plateNo", "")
+        plate_slug = slugify(plate)
         super().__init__(
             coordinator, config_entry,
             name=f"Categorie vignietă {plate}",
-            unique_id=f"{DOMAIN}_categorie_vignieta_{plate}",
-            entity_id=f"sensor.{DOMAIN}_categorie_vignieta_{plate}",
+            unique_id=f"{DOMAIN}_categorie_vignieta_{plate_slug}",
+            entity_id=f"sensor.{DOMAIN}_categorie_vignieta_{plate_slug}",
             icon="mdi:ticket",
         )
-        self.vehicul = vehicul
+        self._plate = plate
 
     @property
     def state(self):
-        vigs = self.vehicul.get("userDetailsVignettes", [])
-        return vigs[0].get("vignetteCategory", "Necunoscut") if vigs else "Necunoscut"
+        item = self._get_current_view_item(self._plate)
+        vigs = (item or {}).get('userDetailsVignettes') or []
+        return (vigs[0].get('vignetteCategory') if vigs else None) or 'N/A'
 
 
 class VignetteStartDateSensor(ErovinietaBaseSensor):
     """Data începerii valabilității vignietei."""
     def __init__(self, coordinator, config_entry, vehicul):
         plate = vehicul["entity"].get("plateNo", "")
+        plate_slug = slugify(plate)
         super().__init__(
             coordinator, config_entry,
             name=f"Data început vignietă {plate}",
-            unique_id=f"{DOMAIN}_start_vignieta_{plate}",
-            entity_id=f"sensor.{DOMAIN}_start_vignieta_{plate}",
+            unique_id=f"{DOMAIN}_start_vignieta_{plate_slug}",
+            entity_id=f"sensor.{DOMAIN}_start_vignieta_{plate_slug}",
             icon="mdi:calendar-start",
         )
-        self.vehicul = vehicul
+        self._plate = plate
 
     @property
     def state(self):
         """Returnează data începerii sau 'N/A' dacă nu există."""
-        vigs = self.vehicul.get("userDetailsVignettes", [])
-        if not vigs:
-            return "N/A"
-        ts = vigs[0].get("vignetteStartDate")
-        return format_timestamp(ts) if ts else ""
-
-class VignetteStartDateSensor(ErovinietaBaseSensor):
-    """Senzor pentru data începerii valabilității vignietei."""
-    def __init__(self, coordinator, config_entry, vehicul):
-        plate = vehicul["entity"].get("plateNo", "necunoscut")
-        name = f"Start vignietă {plate}"
-        uid  = f"{DOMAIN}_start_vignieta_{plate}"
-        eid  = f"sensor.{DOMAIN}_start_vignieta_{plate}"
-        super().__init__(coordinator, config_entry, name, uid, eid, icon="mdi:calendar-start")
-        self.vehicul = vehicul
-
-    @property
-    def state(self):
-        vigs = self.vehicul.get("userDetailsVignettes", [])
-        if not vigs:
-            return ""
-        ts = vigs[0].get("vignetteStartDate")
-        if not ts:
-            return ""
-        return datetime.fromtimestamp(ts / 1000).strftime("%Y-%m-%d %H:%M:%S")
-
+        item = self._get_current_view_item(self._plate)
+        vigs = (item or {}).get('userDetailsVignettes') or []
+        ts = (vigs[0].get('vignetteStartDate') if vigs else None)
+        return format_timestamp(ts)
 
 class VignetteEndDateSensor(ErovinietaBaseSensor):
     """Senzor pentru data expirării vignietei."""
     def __init__(self, coordinator, config_entry, vehicul):
         plate = vehicul["entity"].get("plateNo", "necunoscut")
+        plate_slug = slugify(plate)
         name = f"End vignietă {plate}"
-        uid  = f"{DOMAIN}_end_vignieta_{plate}"
-        eid  = f"sensor.{DOMAIN}_end_vignieta_{plate}"
+        uid  = f"{DOMAIN}_end_vignieta_{plate_slug}"
+        eid  = f"sensor.{DOMAIN}_end_vignieta_{plate_slug}"
         super().__init__(coordinator, config_entry, name, uid, eid, icon="mdi:calendar-end")
-        self.vehicul = vehicul
+        self._plate = plate
 
     @property
     def state(self):
-        vigs = self.vehicul.get("userDetailsVignettes", [])
-        if not vigs:
-            return ""
-        ts = vigs[0].get("vignetteStopDate")
-        if not ts:
-            return ""
-        return datetime.fromtimestamp(ts / 1000).strftime("%Y-%m-%d %H:%M:%S")
+        item = self._get_current_view_item(self._plate)
+        vigs = (item or {}).get("userDetailsVignettes") or []
+        ts = (vigs[0].get("vignetteStopDate") if vigs else None)
+        return format_timestamp(ts)
+

@@ -28,6 +28,7 @@ class ErovinietaAPI:
         self.session = requests.Session()
         self.token = None
         self.token_acquired_time = None
+        self._csrf_token = None
 
     # -------------------------------------------------------------------------
     #                 Autentificare
@@ -49,15 +50,19 @@ class ErovinietaAPI:
         }
 
         self.session.cookies.clear()
+        self._csrf_token = None
 
         try:
-            response = self.session.post(URL_LOGIN, json=payload, timeout=10)
+            response = self.session.post(URL_LOGIN, json=payload, headers=self._default_headers(), timeout=10)
+            self._update_csrf_from_response(response)
             _LOGGER.debug("Răspuns la autentificare: %s", response.text)
             response.raise_for_status()
         except requests.RequestException as e:
             _LOGGER.error("Cerere de autentificare eșuată: %s", e)
             self.token = None
             self.token_acquired_time = None
+            # Reset CSRF token on auth failure to force a clean re-negotiation
+            self._csrf_token = None
             raise Exception("Autentificare eșuată.") from e
 
         if response.status_code == 200:
@@ -70,6 +75,27 @@ class ErovinietaAPI:
         else:
             _LOGGER.error("Eroare la autentificare: %s", response.text)
             raise Exception("Autentificare eșuată.")
+
+    # -------------------------------------------------------------------------
+    #                 Metode CSRF/Headers
+    # -------------------------------------------------------------------------
+
+    def _update_csrf_from_response(self, response: requests.Response) -> None:
+        """Stochează CSRF token dacă serverul îl furnizează."""
+        token = response.headers.get("x-csrf-token")
+        if token:
+            self._csrf_token = token
+
+    def _default_headers(self) -> dict:
+        """Header-e default pentru portal (XHR)."""
+        headers = {
+            "Accept": "application/json, text/plain, */*",
+            "X-Requested-With": "XMLHttpRequest",
+        }
+        if self._csrf_token:
+            # serverul indică explicit: x-csrf-header: X-CSRF-TOKEN
+            headers["X-CSRF-TOKEN"] = self._csrf_token
+        return headers
 
     # -------------------------------------------------------------------------
     #                 Metodă de bază pentru cererile HTTP
@@ -97,14 +123,18 @@ class ErovinietaAPI:
 
     def _do_request(self, method, url, payload=None, headers=None):
         """Execută cererea HTTP."""
+        base_headers = self._default_headers()
         if headers is None:
             headers = {}
+        # user headers override defaults
+        merged_headers = {**base_headers, **headers}
         if self.token:
             self.session.cookies.set("JSESSIONID", self.token, path='/')
 
         _LOGGER.debug("Cerere HTTP [%s] către %s, payload=%s", method, url, payload)
         try:
-            response = self.session.request(method, url, json=payload, headers=headers, timeout=10)
+            response = self.session.request(method, url, json=payload, headers=merged_headers, timeout=10)
+            self._update_csrf_from_response(response)
         except requests.RequestException as e:
             _LOGGER.error("Cerere HTTP eșuată: %s", e)
             return None, None, str(e)

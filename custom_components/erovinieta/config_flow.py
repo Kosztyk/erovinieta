@@ -74,7 +74,7 @@ class ErovinietaOptionsFlow(config_entries.OptionsFlow):
 
     def __init__(self, config_entry):
         """Inițializează OptionsFlow."""
-        self.config_entry = config_entry
+        self._config_entry = config_entry
 
     async def async_step_init(self, user_input=None):
         """Prima etapă: configurarea opțiunilor."""
@@ -91,12 +91,12 @@ class ErovinietaOptionsFlow(config_entries.OptionsFlow):
                 return self.async_create_entry(title="", data=user_input)
 
         schema = vol.Schema({
-            vol.Optional(CONF_UPDATE_INTERVAL, default=self.config_entry.options.get(
+            vol.Optional(CONF_UPDATE_INTERVAL, default=self._config_entry.options.get(
                 CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL
             )): vol.All(
                 vol.Coerce(int), vol.Range(min=MIN_UPDATE_INTERVAL, max=MAX_UPDATE_INTERVAL)
             ),
-            vol.Optional(CONF_ISTORIC_TRANZACTII, default=self.config_entry.options.get(
+            vol.Optional(CONF_ISTORIC_TRANZACTII, default=self._config_entry.options.get(
                 CONF_ISTORIC_TRANZACTII, ISTORIC_TRANZACTII_DEFAULT
             )): vol.All(
                 vol.Coerce(int), vol.Range(min=1, max=10)  # Interval între 1 și 10 ani
